@@ -1,0 +1,49 @@
+// SUBDIVISION
+// keyboard controls:
+//  n = new frame
+//  r = toggle drawing mode (rectangles or circles)
+//  left = decrease number of subdivisions (min 1, default 13)
+//  right = increase number of subdivisions (max 20, default 13)
+//  s = save a BMP screenshot
+
+boolean rects;
+int numLevels;
+
+void setup() {
+  size(1024, 1024);
+  noFill();
+  stroke(0);
+  noLoop();
+  numLevels = 13;
+  rects = true;
+}
+
+void draw() {
+  background(255);
+  drawBox(numLevels, 0, 0, width, height);
+}
+
+void drawBox(int n, float x, float y, float w, float h) {
+  if (n==0) {
+    if (rects)  rect(x, y, w, h);
+    else        ellipse(x + w/2, y + h/2, w*0.95, h*0.95);
+  } else {
+    float t = random(1);
+    boolean horiz = random(1) > 0.5 ? true : false;
+    if (random(1) > 0.5) {
+      drawBox(n-1, x, y, w, h*t);
+      drawBox(n-1, x, y+h*t, w, h*(1-t));  
+    } else {
+      drawBox(n-1, x, y, w*t, h);
+      drawBox(n-1, x+w*t, y, w*(1-t), h);  
+    }      
+  }
+}
+
+void keyPressed() {
+  if      (key=='n')       { redraw(); }
+  else if (key=='r')       { rects = !rects;  redraw(); }
+  else if (key=='s')       { saveFrame("frame####.bmp"); } 
+  else if (keyCode==LEFT)  { numLevels = constrain(numLevels-1, 1, 20);  redraw(); }
+  else if (keyCode==RIGHT) { numLevels = constrain(numLevels+1, 1, 20);  redraw(); }
+}
